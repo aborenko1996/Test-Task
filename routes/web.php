@@ -15,19 +15,27 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/login', 'ShipmentsController@login');
-Route::post('/auth', 'ShipmentsController@auth');
-Route::get('/item/create', 'ShipmentsController@createItemGet');
-Route::post('/item/create', 'ShipmentsController@createItemPost');
-Route::get('/item/{id}/edit', 'ShipmentsController@editItem');
-Route::get('/item/{id}', 'ShipmentsController@item');
-Route::put('/item/{id}', 'ShipmentsController@updateItem');
-Route::delete('/item/{id}', 'ShipmentsController@deleteItem');
-Route::get('/shipment', 'ShipmentsController@shipments');
-Route::get('/shipment/create', 'ShipmentsController@createShipmentGet');
-Route::post('/shipment/create', 'ShipmentsController@createShipmentPost');
-Route::get('/shipment/{id}', 'ShipmentsController@shipment');
-Route::put('/shipment/{id}', 'ShipmentsController@updateShipment');
-Route::delete('/shipment/{id}', 'ShipmentsController@deleteShipment');
-Route::get('/shipment/{id}/edit', 'ShipmentsController@editShipment');
-Route::post('/shipment/{id}/send', 'ShipmentsController@sendShipment');
+Route::group(['prefix'=>'login', 'middleware'=>'token'], function(){
+    Route::get('/', 'UserController@login');
+    Route::post('/', 'UserController@auth');
+});
+
+Route::group(['prefix'=>'item', 'middleware'=>'token'], function(){
+    Route::get('/create', 'ItemsController@getCreateItem');
+    Route::post('/create', 'ItemsController@postCreateItem');
+    Route::get('/{id}/edit', 'ItemsController@editItem');
+    Route::put('/{id}', 'ItemsController@updateItem');
+    Route::get('/{id}', 'ItemsController@getItem');
+    Route::delete('/{id}', 'ItemsController@deleteItem');
+});
+
+Route::group(['prefix'=>'shipment', 'middleware'=>'token'], function(){
+    Route::get('list', 'ShipmentsController@getShipments');
+    Route::get('create', 'ShipmentsController@getCreateShipment');
+    Route::post('create', 'ShipmentsController@postCreateShipment');
+    Route::get('{id}', 'ShipmentsController@getShipment');
+    Route::put('{id}', 'ShipmentsController@updateShipment');
+    Route::get('{id}/edit', 'ShipmentsController@editShipment');
+    Route::delete('{id}', 'ShipmentsController@deleteShipment');
+    Route::post('{id}/send', 'ShipmentsController@sendShipment');
+});

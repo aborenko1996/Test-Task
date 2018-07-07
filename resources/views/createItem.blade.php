@@ -1,6 +1,9 @@
 @extends('layouts.app')
 @section('title', (isset($item) ? 'Edit' : 'Create') .  ' Item')
 @section('content')
+@if(isset($data['error']) && $data['error'])
+<h1 class="text-center text-danger">{{$data['message']}}</h1>
+@else
 @if(!isset($item))
            <h1 class="text-center">Create Item</h1>
            <div class="col-lg-offset-3 col-lg-6 col-md-offset-3 col-md-6 col-sm-offset-3 col-sm-6 col-xs-offset-3 col-xs-6">
@@ -12,7 +15,7 @@
                         <div class="form-group">
                                 <label class="control-label" for="shipment">Shipment</label>
                                 <select class="form-control" id="shipment">
-                                   @foreach ($shipments as $shipment)
+                                   @foreach ($data['shipments'] as $shipment)
                                     <option value="{{$shipment['id']}}">{{$shipment['name']}}</option>
                                    @endforeach
                                 </select>
@@ -26,7 +29,7 @@
                             <input name="code" required="required" pattern= "([0-9])+" type="text" class="form-control required" placeholder="Enter code">
                         </div>
                         <div class="form-group">
-                            <a href="{{url()->previous()}}" class="btn btn-primary">< Back</a>
+                            <a href="{{url('shipment/list')}}" class="btn btn-primary">< Back</a>
                             <button type="submit" class="btn btn-primary">Create</button>
                         </div>
                 </form>
@@ -38,7 +41,7 @@
                         <div class="form-group">
                                 <label class="control-label" for="shipment">Shipment</label>
                                 <select class="form-control" id="shipment">
-                                   @foreach ($shipments as $shipment)
+                                   @foreach ($data['shipments'] as $shipment)
                                     <option @if($shipment['id'] == $item['shipment_id']) selected @endif value="{{$shipment['id']}}">{{$shipment['name']}}</option>
                                    @endforeach
                                 </select>
@@ -52,7 +55,7 @@
                         <input name="code" value="{{$item['code']}}" required="required" pattern= "([0-9])+" type="text" class="form-control required" placeholder="Enter code">
                         </div>
                         <div class="form-group">
-                            <a href="{{url()->previous()}}" class="btn btn-primary">< Back</a>
+                            <a href="{{url('shipment/list')}}" class="btn btn-primary">< Back</a>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                 </form>
@@ -70,13 +73,17 @@
                 dataType: 'json',
                 data: {'id': $("input[name='id']").val(), 'name': $("input[name='name']").val(), 'code': $("input[name='code']").val(), 'shipment_id':$("#shipment").val()}
             }).then(function(response){
-                if(response.error){
-                    alert(response.message);
-                    if(response.expired) window.location = "{{url('login')}}";
+                if(response.expired){
+                    alert('Token Expired');
+                    location.reload();
                 }else{
-                    alert("Item successfully created");
-                    console.log(response);
-                    window.location = "{{url('/shipment')}}";
+                    if(response.error){
+                        alert(response.message);
+                    }else{
+                        alert("Item successfully created");
+                        console.log(response);
+                        window.location = "{{url('/shipment/list')}}";
+                    }
                 }
             });
         })
@@ -91,15 +98,20 @@
                 dataType: 'json',
                 data: {'id': {{$item['id']}}, 'name': $("input[name='name']").val(), 'code': $("input[name='code']").val(), 'shipment_id':$("#shipment").val()}
             }).then(function(response){
-                if(response.error){
-                    alert(response.message);
-                    if(response.expired) window.location = "{{url('login')}}";
+                if(response.expired){
+                    alert('Token Expired');
+                    location.reload();
                 }else{
-                    alert("Item successfully updated");
-                    window.location = "{{url('/shipment')}}";
+                   if(response.error){
+                        alert(response.message);
+                    }else{
+                        alert("Item successfully updated");
+                        window.location = "{{url('/shipment/list')}}";
+                    }
                 }
             });
         })
         </script>
+    @endif
     @endif
     @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Request;
 
 class Token
 {
@@ -15,9 +16,23 @@ class Token
      */
     public function handle($request, Closure $next)
     {
-        if(!$request->session()->has('authToken')){
-            return redirect('/login');
+        
+        if(!$request->session()->has('authToken') && Request::path() != 'login'){
+            return redirect('login');
+        }else if ($request->session()->has('authToken') && Request::path() == 'login'){
+            return redirect('shipment/list');
         }
-        return $next($request);
+        
+        $response = $next($request);
+        
+        if($request->session()->get('tokenExpired') && Request::path() != 'login'){
+            $request->session()->forget('authToken');
+            if($request->ajax()){
+                 return response()->json(['expired'=>true], 200); 
+            }
+            return redirect('login');
+        }
+       
+        return $response;
     }
 }

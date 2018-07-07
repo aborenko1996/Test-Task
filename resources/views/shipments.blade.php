@@ -1,6 +1,9 @@
 @extends('layouts.app')
 @section('title', 'Shipments')
 @section('content')
+@if(isset($data['error']) && $data['error'])
+<h1 class="text-center text-danger">{{$data['message']}}</h1>
+@else
     <h1 class="text-center">Shipment List</h1>
     <hr/>
     <a href="{{url('shipment/create')}}" class="btn btn-primary">Add shipment</a>
@@ -8,7 +11,8 @@
     <hr/>
     <table class="table table-bordered text-center">
         <tbody>
-            @foreach ($shipments as $shipment)
+           @if(isset($data['shipments']))
+            @foreach ($data['shipments'] as $shipment)
                 <tr>
                     <td colspan="4"><strong>Shipment {{$shipment['id']}}</strong></td>
                 </tr>
@@ -35,6 +39,7 @@
                         @endforeach
                 @endif
             @endforeach
+            @endif
         </tbody>
     </table>
 @endsection
@@ -45,12 +50,16 @@
             method: 'delete',
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         }).then(function(response){
-            if(response.error){
-                alert(response.message);
-                if(response.expired) window.location = "{{url('login')}}";
-            }else{
-                alert("Shipment with ID " + id + " successfully deleted");
+            if(response.expired){
+                alert('Token Expired');
                 location.reload();
+            }else{
+                if(response.error){
+                    alert(response.message);
+                }else{
+                    alert("Shipment with ID " + id + " successfully deleted");
+                    location.reload();
+                }
             }
         })
     }
@@ -61,12 +70,16 @@
             method: 'delete',
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         }).then(function(response){
-            if(response.error){
-                alert(response.message);
-                if(response.expired) window.location = "{{url('login')}}";
-            }else{
-                alert("Item with ID " + id + " successfully deleted");
+            if(response.expired){
+                alert('Token Expired');
                 location.reload();
+            }else{
+               if(response.error){
+                    alert(response.message);
+                }else{
+                    alert("Item with ID " + id + " successfully deleted");
+                    location.reload();
+                }
             }
         })
     }
@@ -77,14 +90,19 @@
             method: 'post',
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         }).then(function(response){
-            if(response.error){
-                alert(response.message);
-                if(response.expired) window.location = "{{url('login')}}";
-            }else{
-                alert("Shipment with ID " + id + " successfully sent");
+            if(response.expired){
+                alert('Token Expired');
                 location.reload();
+            }else{
+                if(response.error){
+                    alert(response.message);
+                }else{
+                    alert("Shipment with ID " + id + " successfully sent");
+                    location.reload();
+                }
             }
         })
     }
     </script>
+@endif
 @endsection

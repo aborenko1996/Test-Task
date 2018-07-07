@@ -22,7 +22,7 @@
         <script>$("#loginForm").submit(function(event){
             event.preventDefault();
             $.ajax({
-                url: '{{url('auth')}}',
+                url: '{{url('login')}}',
                 method: 'post',
                 dataType: 'json',
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -31,8 +31,8 @@
                 if(response.error){
                     alert(response.message);
                 }else{
-                    alert(response.message);
-                    window.location = "{{url('/shipment')}}"
+                    alert("Login Successful");
+                    window.location = "{{url('/shipment/list')}}"
                 }
             });
         })

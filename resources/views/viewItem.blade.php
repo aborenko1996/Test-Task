@@ -1,9 +1,12 @@
 @extends('layouts.app')
 @section('title', 'View Item')
 @section('content')
-<h1 class="text-center">View Item with ID {{$item['id']}}</h1>
+@if(isset($data['error']) && $data['error'])
+<h1 class="text-center text-danger">{{$data['message']}}</h1>
+@else
+<h1 class="text-center">View Item with ID {{$data['id']}}</h1>
 <hr/>
-<a href="{{url('shipment')}}" class="btn btn-primary">< Back</a>
+<a href="{{url('shipment/list')}}" class="btn btn-primary">< Back</a>
 <hr/>
 <table class="table table-bordered">
     <thead>
@@ -19,15 +22,15 @@
     </thead>
     <tbody>
             <tr>
-                <td class="text-center">{{$item['id']}}</td>
-                <td class="text-center">{{$item['shipment_id']}}</td>
-                <td class="text-center">{{$item['name']}}</td>
-                <td class="text-center">{{$item['code']}}</td>
-                <td class="text-center">{{$item['created_at']}}</td>
-                <td class="text-center">{{$item['updated_at']}}</td>
+                <td class="text-center">{{$data['id']}}</td>
+                <td class="text-center">{{$data['shipment_id']}}</td>
+                <td class="text-center">{{$data['name']}}</td>
+                <td class="text-center">{{$data['code']}}</td>
+                <td class="text-center">{{$data['created_at']}}</td>
+                <td class="text-center">{{$data['updated_at']}}</td>
                 <td>
-                    <a class="btn btn-primary" href="{{url('item/' . $item['id'] . '/edit')}}">Edit</a>
-                    <a class="btn btn-danger" onclick="DeleteItem({{$item['id']}})">Delete</a>
+                    <a class="btn btn-primary" href="{{url('item/' . $data['id'] . '/edit')}}">Edit</a>
+                    <a class="btn btn-danger" onclick="DeleteItem({{$data['id']}})">Delete</a>
                 </td>
             </tr>
     </tbody>
@@ -40,15 +43,20 @@
             method: 'delete',
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         }).then(function(response){
-            if(response.error){
-                alert(response.message);
-                if(response.expired) window.location = "{{url('login')}}";
+            if(response.expired){
+                alert('Token Expired');
+                location.reload();
             }else{
-                alert("Item with ID " + id + " successfully deleted");
-                window.location = "{{url('shipment')}}";
+                if(response.error){
+                    alert(response.message);
+                }else{
+                    alert("Item with ID " + id + " successfully deleted");
+                    window.location = "{{url('shipment/list')}}";
+                }
             }
         })
     }
     
     </script>
+@endif
 @endsection

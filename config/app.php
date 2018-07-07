@@ -227,5 +227,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
+    
+    'apiUrl'=> "https://api.shipments.test-y-sbm.com/"
 
 ];
